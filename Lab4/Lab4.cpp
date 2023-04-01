@@ -115,9 +115,11 @@ pair<string, string> simpleDiv(string num1, string num2) {
     for (int i = 0; i < num1.length(); i++) {
         tmp = tmp * 10 + int(num1[i]) - 48;
         q = q + to_string(tmp / x);
-        tmp = tmp - x * (q[q.length() - 1] - 48);
+        tmp = tmp - x * (q.back() - 48);
     }
 
+    while (q[0] == '0' && q.length() > 1)
+        q.erase(0, 1);
     return make_pair(q, to_string(tmp));
 }
 
@@ -180,12 +182,9 @@ pair<string, string> division(string num1, string num2, int b) {
         }
     }
 
-    string r = "0";
-    if (num1 == num2 && m < 0)
-        q = "1";
-    else
-        r = subtraction(num1copy, multiplication(q, num2copy, 10), 10);
-
+    while (q[0] == '0' && q.length() > 1)
+        q.erase(0, 1);
+    string r = subtraction(num1copy, multiplication(num2copy, q, 10), 10);
     return make_pair(q, r);
 }
 
@@ -234,8 +233,6 @@ int main() {
             res = division(num1, num2, 10);
         else
             res = make_pair("0", num1);
-        while (res.first[0] == '0' && res.first.length() > 1)
-            res.first.erase(0, 1);
         auto end = std::chrono::steady_clock::now();
         auto elapsed_ms = std::chrono::duration_cast<std::chrono::milliseconds>(end - begin);
         cout << endl << num1 << " / " << num2 << " = " << res.first << "\nОстаток: " << res.second << "\nВремя выполнения : " << elapsed_ms.count() << "мc \n";
