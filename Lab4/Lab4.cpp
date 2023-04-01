@@ -55,7 +55,6 @@ string addition(string num1, string num2, int mod) {
     return res;
 }
 
-
 string subtraction(string num1, string num2, int mod) {
     string res = "";
     int n = num1.length(), k = 0;
@@ -74,7 +73,6 @@ string subtraction(string num1, string num2, int mod) {
         res.erase(0, 1);
     return res;
 }
-
 
 string multiplication(string num1, string num2, int mod) {
     reverse(num1.begin(), num1.end());
@@ -109,25 +107,23 @@ string multiplication(string num1, string num2, int mod) {
 }
 
 
-pair <string, string> simpleDiv(string num1, string num2) {
-    char x = (int)num2[0] - 48;
+pair<string, string> simpleDiv(string num1, string num2) {
+    int x = num2[0] - 48;
 
-    int tmp = 0, q = 0;
+    int tmp = 0;
+    string q = "";
     for (int i = 0; i < num1.length(); i++) {
         tmp = tmp * 10 + int(num1[i]) - 48;
-        if (tmp == 0)
-            q *= 10;
-        else if (tmp >= x) {
-            q = q * 10 + tmp / x;
-            tmp = tmp - x * (q % 10);
-        }
+        q = q + to_string(tmp / x);
+        tmp = tmp - x * (q[q.length() - 1] - 48);
     }
 
-    return make_pair(to_string(q), to_string(tmp));
+    return make_pair(q, to_string(tmp));
 }
 
 
-pair <string, string> division(string num1, string num2, int b) {
+pair<string, string> division(string num1, string num2, int b) {
+    string num1copy = num1, num2copy = num2;
     int mn = num1.length(), n = num2.length();
     string q = "";
 
@@ -140,14 +136,13 @@ pair <string, string> division(string num1, string num2, int b) {
     int m = mn - n;
     if (m < 0)
         m = 0;
-    
+
     for (int j = m; j >= 0; j--) {
         mn = num1.length(), n = num2.length();
         while (mn - (j + n) - 1 < 0) {
             num1 = "0" + num1;
             mn++;
         }
-        
 
         int n1 = num1[mn - (j + n) - 1] - 48;
         int n2 = num1[mn - (j + n - 1) - 1] - 48;
@@ -189,37 +184,9 @@ pair <string, string> division(string num1, string num2, int b) {
     if (num1 == num2 && m < 0)
         q = "1";
     else
-        r = simpleDiv(num1, to_string(d)).first;
-
-    while (q[0] == '0' && q.length() > 1)
-        q.erase(0, 1);
+        r = subtraction(num1copy, multiplication(q, num2copy, 10), 10);
 
     return make_pair(q, r);
-}
-
-
-void numberSystem10(string num1, string num2) {
-    cpp_int boostX(num1), boostY(num2);
-
-    auto begin = std::chrono::steady_clock::now();
-    pair <string, string> res;
-    if (num2.length() == 1)
-        res = simpleDiv(num1, num2);
-    else if (isFstMoreSnd(num1, num2) || num1 == num2)
-        res = division(num1, num2, 10);
-    else
-        res = make_pair("0", num1);
-    auto end = std::chrono::steady_clock::now();
-    auto elapsed_ms = std::chrono::duration_cast<std::chrono::milliseconds>(end - begin);
-    while (res.first[0] == '0' && res.first.size() > 1)
-        res.first.erase(0, 1);
-    cout << endl << num1 << " / " << num2 << " = " << res.first << "\nОстаток: " << res.second << "\nВремя выполнения : " << elapsed_ms.count() << "мc \n";
-
-    begin = std::chrono::steady_clock::now();
-    cpp_int boostRes = boostX / boostY;
-    end = std::chrono::steady_clock::now();
-    elapsed_ms = std::chrono::duration_cast<std::chrono::milliseconds>(end - begin);
-    cout << "Время выполнения (с помощью встроенной библиотеки): " << elapsed_ms.count() << "мc\n";
 }
 
 
@@ -259,7 +226,26 @@ int main() {
             return 0;
         }
 
-        numberSystem10(num1, num2);
+        auto begin = std::chrono::steady_clock::now();
+        pair<string, string> res;
+        if (num2.length() == 1)
+            res = simpleDiv(num1, num2);
+        else if (isFstMoreSnd(num1, num2) || num1 == num2)
+            res = division(num1, num2, 10);
+        else
+            res = make_pair("0", num1);
+        while (res.first[0] == '0' && res.first.length() > 1)
+            res.first.erase(0, 1);
+        auto end = std::chrono::steady_clock::now();
+        auto elapsed_ms = std::chrono::duration_cast<std::chrono::milliseconds>(end - begin);
+        cout << endl << num1 << " / " << num2 << " = " << res.first << "\nОстаток: " << res.second << "\nВремя выполнения : " << elapsed_ms.count() << "мc \n";
+
+        cpp_int boostX(num1), boostY(num2);
+        begin = std::chrono::steady_clock::now();
+        cpp_int boostRes = boostX / boostY;
+        end = std::chrono::steady_clock::now();
+        elapsed_ms = std::chrono::duration_cast<std::chrono::milliseconds>(end - begin);
+        cout << "Время выполнения (с помощью встроенной библиотеки): " << elapsed_ms.count() << "мc\n";
 
         cout << endl;
     }
