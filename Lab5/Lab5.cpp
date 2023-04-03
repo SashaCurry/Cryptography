@@ -160,7 +160,7 @@ pair<string, string> division(string num1, string num2, int b) {
             if (r_ < b)
                 if (q_ == b || q_ * n1 > b * r_ + n2) {
                     q_ = q_ - 1;
-    
+
                     r_ = r_ + n3;
                 }
         }
@@ -184,13 +184,13 @@ pair<string, string> division(string num1, string num2, int b) {
     }
 
     while (q[0] == '0' && q.length() > 1)
-        q.erase(0 , 1);
+        q.erase(0, 1);
     string r = subtraction(num1copy, multiplication(q, num2copy, 10), 10);
     return make_pair(q, r);
 }
 
 
-string exponentiation(string num, string deg, int mod) {
+string exponentiation(string num, string deg, string mod) {
     string N = deg, Y = "1", Z = num;
 
     if (deg == "0")
@@ -200,11 +200,11 @@ string exponentiation(string num, string deg, int mod) {
         string prevN = N;
         N = simpleDiv(N, "2").first;
         if ((prevN.back() - 48) % 2 != 0) {
-            Y = multiplication(Z, Y, 10);
+            Y = division(multiplication(Z, Y, 10), mod, 10).second;
             if (N == "0")
                 return Y;
         }
-        Z = multiplication(Z, Z, 10);    
+        Z = division(multiplication(Z, Z, 10), mod, 10).second;
     }
 }
 
@@ -214,46 +214,60 @@ int main() {
     cout << "\t Деление неотрицательных целых чисел в 10 системе счисления \nq - выход \n";
 
     for (;;) {
-        string num1, num2;
+        string num, deg, mod;
 
         while (true) {
-            cout << "\n1-е число: ";
-            cin >> num1;
-            if (num1 == "q")
+            cout << "\nЧисло: ";
+            cin >> num;
+            if (num == "q")
                 return 0;
-            if (isNumIn10(num1))
+            if (isNumIn10(num))
                 break;
             cout << "Данное число не принадлежит положительной 10-й СС!";
         }
         while (true) {
-            cout << "2-е число: ";
-            cin >> num2;
-            if (num2 == "q")
+            cout << "Степень: ";
+            cin >> deg;
+            if (deg == "q")
                 return 0;
-            if (isNumIn10(num2))
+            if (isNumIn10(deg))
+                break;
+            cout << "Данное число не принадлежит положительной 10-й СС!\n";
+        }
+        while (true) {
+            cout << "Модуль: ";
+            cin >> mod;
+            if (mod == "q")
+                return 0;
+            if (isNumIn10(mod))
                 break;
             cout << "Данное число не принадлежит положительной 10-й СС!\n";
         }
 
-        while (num1[0] == '0' && num1.size() > 1)
-            num1.erase(0, 1);
-        while (num2[0] == '0' && num2.size() > 1)
-            num2.erase(0, 1);
+        while (num[0] == '0' && num.size() > 1)
+            num.erase(0, 1);
+        while (deg[0] == '0' && deg.size() > 1)
+            deg.erase(0, 1);
+        while (mod[0] == '0' && mod.size() > 1)
+            mod.erase(0, 1);
+
+        if (mod == "0") {
+            cout << "\nНеопределённость!\n";
+            continue;
+        }
 
         auto begin = std::chrono::steady_clock::now();
         string res;
-        res = exponentiation(num1, num2, 10);
+        res = exponentiation(num, deg, mod);
         while (res[0] == '0' && res.length() > 1)
             res.erase(0, 1);
         auto end = std::chrono::steady_clock::now();
         auto elapsed_ms = std::chrono::duration_cast<std::chrono::milliseconds>(end - begin);
-        cout << endl << num1 << " ^ " << num2 << " = " << res << "\nВремя выполнения : " << elapsed_ms.count() << "мc \n";
+        cout << endl << num << " ^ " << deg << " (mod " << mod << ") = " << res << "\nВремя выполнения : " << elapsed_ms.count() << "мc \n";
 
-        cpp_int boostX(num1), boostY(num2);
-        cpp_int boostRes = 1;
+        cpp_int boostX(num), boostY(deg), boostZ(mod);
         begin = std::chrono::steady_clock::now();
-        for (long long i = 0; i < boostY; i++)
-            boostX *= boostX;
+        cpp_int boostRes = boostX * boostY * boostZ;
         end = std::chrono::steady_clock::now();
         elapsed_ms = std::chrono::duration_cast<std::chrono::milliseconds>(end - begin);
         cout << "Время выполнения (с помощью встроенной библиотеки): " << elapsed_ms.count() << "мc\n";
