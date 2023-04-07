@@ -22,7 +22,17 @@ bool isNumIn10(string num) {
 }
 
 
+string cleaning(string num) {
+    while (num[0] == '0' && num.size() > 1)
+            num.erase(0, 1);
+    return num;
+}
+
+
 bool isFstMoreSnd(string num1, string num2) {
+    num1 = cleaning(num1);
+    num2 = cleaning(num2);
+
     if (num1.length() > num2.length())
         return true;
     else if (num1.length() < num2.length())
@@ -129,15 +139,15 @@ pair<string, string> division(string num1, string num2, int b) {
     int mn = num1.length(), n = num2.length();
     string q = "";
 
-    int d = b / ((int)num2[0] - 48 + 1);
-    num1 = multiplication(num1, to_string(d), 10);
-    num2 = multiplication(num2, to_string(d), 10);
-    if (num1.length() > mn)
-        mn++;
-
     int m = mn - n;
     if (m < 0)
         m = 0;
+
+    int d = b / ((int)num2[0] - 48 + 1);
+    num1 = multiplication(num1, to_string(d), 10);
+    num2 = multiplication(num2, to_string(d), 10);
+    if (num1.length() == mn)
+        num1 = "0" + num1;
 
     for (int j = m; j >= 0; j--) {
         mn = num1.length(), n = num2.length();
@@ -160,7 +170,6 @@ pair<string, string> division(string num1, string num2, int b) {
             if (r_ < b)
                 if (q_ == b || q_ * n1 > b * r_ + n2) {
                     q_ = q_ - 1;
-
                     r_ = r_ + n3;
                 }
         }
@@ -170,9 +179,9 @@ pair<string, string> division(string num1, string num2, int b) {
         if (isFstMoreSnd(help, substr)) {
             substr = subtraction(to_string(pow(b, n + 1)), subtraction(help, substr, 10), 10);
             num1 = num1.substr(0, mn - (j + n) - 1) + substr + num1.substr(mn - j);
-            q[j] = q_ + 48;
+            q = q + to_string(q_);
 
-            q[j] = (int)q[j] - 1;
+            q.back() = (int)q.back() - 1;
             substr = num1.substr(mn - (j + n) - 1, n + 1);
             num1 = num1.substr(0, mn - (j + n) - 1) + substr + num1.substr(mn - j);
         }
@@ -183,9 +192,8 @@ pair<string, string> division(string num1, string num2, int b) {
         }
     }
 
-    while (q[0] == '0' && q.length() > 1)
-        q.erase(0, 1);
-    string r = subtraction(num1copy, multiplication(q, num2copy, 10), 10);
+    q = cleaning(q);
+    string r = subtraction(num1copy, multiplication(num2copy, q, 10), 10);
     return make_pair(q, r);
 }
 
