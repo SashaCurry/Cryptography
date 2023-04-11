@@ -24,7 +24,7 @@ bool isNumIn10(string num) {
 
 string cleaning(string num) {
     while (num[0] == '0' && num.size() > 1)
-            num.erase(0, 1);
+        num.erase(0, 1);
     return num;
 }
 
@@ -199,6 +199,12 @@ pair<string, string> division(string num1, string num2, int b) {
 
 
 string exponentiation(string num, string deg, string mod) {
+    num = cleaning(num);
+    deg = cleaning(deg);
+    mod = cleaning(mod);
+    if (mod == "0")
+        return "Hеопределённость!";
+
     string N = deg, Y = "1", Z = num;
 
     if (deg == "0")
@@ -252,23 +258,9 @@ int main() {
             cout << "Данное число не принадлежит положительной 10-й СС!\n";
         }
 
-        while (num[0] == '0' && num.size() > 1)
-            num.erase(0, 1);
-        while (deg[0] == '0' && deg.size() > 1)
-            deg.erase(0, 1);
-        while (mod[0] == '0' && mod.size() > 1)
-            mod.erase(0, 1);
-
-        if (mod == "0") {
-            cout << "\nНеопределённость!\n";
-            continue;
-        }
-
         auto begin = std::chrono::steady_clock::now();
         string res;
         res = exponentiation(num, deg, mod);
-        while (res[0] == '0' && res.length() > 1)
-            res.erase(0, 1);
         auto end = std::chrono::steady_clock::now();
         auto elapsed_ms = std::chrono::duration_cast<std::chrono::milliseconds>(end - begin);
         cout << endl << num << " ^ " << deg << " (mod " << mod << ") = " << res << "\nВремя выполнения : " << elapsed_ms.count() << "мc \n";
