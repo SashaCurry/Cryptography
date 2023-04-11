@@ -24,7 +24,7 @@ bool isNumIn10(string num) {
 
 string cleaning(string num) {
     while (num[0] == '0' && num.size() > 1)
-            num.erase(0, 1);
+        num.erase(0, 1);
     return num;
 }
 
@@ -66,6 +66,9 @@ string addition(string num1, string num2, int mod) {
 }
 
 string subtraction(string num1, string num2, int mod) {
+    num1 = cleaning(num1);
+    num2 = cleaning(num2);
+
     string res = "";
     int n = num1.length(), k = 0;
 
@@ -135,13 +138,16 @@ pair<string, string> simpleDiv(string num1, string num2) {
 
 
 pair<string, string> division(string num1, string num2, int b) {
+    if (num2.length() == 1)
+        return simpleDiv(num1, num2);
+    else if (!isFstMoreSnd(num1, num2) && num1 != num2)
+        return make_pair("0", num1);
+
     string num1copy = num1, num2copy = num2;
     int mn = num1.length(), n = num2.length();
     string q = "";
 
     int m = mn - n;
-    if (m < 0)
-        m = 0;
 
     int d = b / ((int)num2[0] - 48 + 1);
     num1 = multiplication(num1, to_string(d), 10);
@@ -183,8 +189,8 @@ pair<string, string> division(string num1, string num2, int b) {
 
             q.back() = (int)q.back() - 1;
             substr = num1.substr(mn - (j + n) - 1, n + 1);
-            num1 = num1.substr(0, mn - (j + n) - 1) + substr + num1.substr(mn - j);
-        }   
+            num1 = addition(substr, "0" + num2, 10) + num1.substr(mn - j);
+        }
         else {
             substr = subtraction(substr, help, 10);
             num1 = num1.substr(0, mn - (j + n) - 1) + substr + num1.substr(mn - j);
@@ -228,13 +234,7 @@ int main() {
         num2 = cleaning(num2);
 
         auto begin = std::chrono::steady_clock::now();
-        pair<string, string> res;
-        if (num2.length() == 1)
-            res = simpleDiv(num1, num2);
-        else if (isFstMoreSnd(num1, num2) || num1 == num2)
-            res = division(num1, num2, 10);
-        else
-            res = make_pair("0", num1);
+        pair<string, string> res = division(num1, num2, 10);
         auto end = std::chrono::steady_clock::now();
         auto elapsed_ms = std::chrono::duration_cast<std::chrono::milliseconds>(end - begin);
         cout << endl << num1 << " / " << num2 << " = " << res.first << "\nОстаток: " << res.second << "\nВремя выполнения : " << elapsed_ms.count() << "мc \n";
