@@ -233,6 +233,11 @@ int main() {
         num1 = cleaning(num1);
         num2 = cleaning(num2);
 
+        if (num2 == "0") {
+            cout << "Деление на 0 невозможно!\n";
+            continue;
+        }
+
         auto begin = std::chrono::steady_clock::now();
         pair<string, string> res = division(num1, num2, 10);
         auto end = std::chrono::steady_clock::now();

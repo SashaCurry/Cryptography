@@ -66,6 +66,9 @@ string addition(string num1, string num2, int mod) {
 }
 
 string subtraction(string num1, string num2, int mod) {
+    num1 = cleaning(num1);
+    num2 = cleaning(num2);
+
     string res = "";
     int n = num1.length(), k = 0;
 
@@ -135,13 +138,16 @@ pair<string, string> simpleDiv(string num1, string num2) {
 
 
 pair<string, string> division(string num1, string num2, int b) {
+    if (num2.length() == 1)
+        return simpleDiv(num1, num2);
+    else if (!isFstMoreSnd(num1, num2) && num1 != num2)
+        return make_pair("0", num1);
+
     string num1copy = num1, num2copy = num2;
     int mn = num1.length(), n = num2.length();
     string q = "";
 
     int m = mn - n;
-    if (m < 0)
-        m = 0;
 
     int d = b / ((int)num2[0] - 48 + 1);
     num1 = multiplication(num1, to_string(d), 10);
@@ -183,7 +189,7 @@ pair<string, string> division(string num1, string num2, int b) {
 
             q.back() = (int)q.back() - 1;
             substr = num1.substr(mn - (j + n) - 1, n + 1);
-            num1 = num1.substr(0, mn - (j + n) - 1) + substr + num1.substr(mn - j);
+            num1 = addition(substr, "0" + num2, 10) + num1.substr(mn - j);
         }
         else {
             substr = subtraction(substr, help, 10);
@@ -204,12 +210,12 @@ string exponentiation(string num, string deg, string mod) {
     mod = cleaning(mod);
     if (mod == "0")
         return "Hеопределённость!";
-
-    string N = deg, Y = "1", Z = num;
-
-    if (deg == "0")
+    else if (mod == "1")
+        return "0";
+    else if (deg == "0")
         return "1";
 
+    string N = deg, Y = "1", Z = num;
     for (;;) {
         string prevN = N;
         N = simpleDiv(N, "2").first;
