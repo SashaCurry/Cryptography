@@ -86,21 +86,22 @@ set <string> fact(string n) {
 }
 
 
-string genericG(set <string> mults, string n) {
-    string g, nDec = subtraction(n, "1");
-    while (true) {
+string genericG(set <string> mults, string p) {
+    string g, pDec = subtraction(p, "1");
+    urbanShaurma:while (true) {
         string gBin = "";
         int gBinSize = rand() % 50 + 1;
         for (int i = 0; i < gBinSize; i++)
             gBin = gBin + to_string(rand() % 2);
-        g = division(decForm(gBin), n).second;
+        g = division(decForm(gBin), p).second;
+        if (g == "0" || g == "1")
+            continue;
 
-        for (auto p : mults)
-            if (exponentiation(g, division(nDec, p).first, n) == "1")
-                continue;
+        for (auto it : mults)
+            if (exponentiation(g, division(pDec, it).first, p) == "1")
+                goto urbanShaurma;
         return g;
     }
-    return "0";
 }
 
 
@@ -123,10 +124,10 @@ void genericKeys() {
     cout << "g = " << g << endl;
 
     string xBin = "";
-    int xBinSize = rand() % 50 + 1;
+    int xBinSize = rand() % 50;
     for (int i = 0; i < xBinSize; i++)
         xBin = xBin + to_string(rand() % 2);
-    string x = division(decForm(xBin), pDec).second;
+    string x = division(decForm(xBin + "11"), pDec).second;
     cout << "x = " << x << endl;
 
     string y = exponentiation(g, x, p);
@@ -324,6 +325,8 @@ int main() {
 
         while (true) {
             getline(cin, mode);
+            if (mode == "")
+                continue;
             if (mode == "q")
                 return 0;
             if (mode == "1" || mode == "2" || mode == "3")
